@@ -5,23 +5,66 @@
   background: var(--surface);
 }
 
-.header {
+.toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
+  gap: 4px;
+  padding: 6px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  flex-wrap: wrap;
+  background: var(--surface);
 }
 
-.fileName {
-  font-size: 14px;
-  font-weight: 500;
+.toolGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.toolBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   color: var(--text-secondary);
+  transition: all 0.15s;
+}
+
+.toolBtn:hover {
+  background: var(--block-hover);
+  color: var(--text-primary);
+}
+
+.toolBtn:active {
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .editor {
   flex: 1;
   overflow: hidden;
-  padding: 8px 16px;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 4px 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .toolBtn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
 }

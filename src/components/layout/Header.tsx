@@ -1,4 +1,5 @@
-import { FileText, Type, LayoutGrid, Columns2, Eye, EyeOff, Download, Upload, Sun, Moon, Monitor } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { FileText, Type, LayoutGrid, Columns2, Eye, EyeOff, Download, Upload, Sun, Moon, Monitor, Pencil } from 'lucide-react';
 import { useEditor } from '../../store/editorStore';
 import { useTheme } from '../../theme/ThemeProvider';
 import { saveMarkdownFile, loadMarkdownFile } from '../../utils/fileIO';
@@ -22,6 +23,26 @@ const themeOptions = [
 export function Header() {
   const { state, dispatch } = useEditor();
   const { theme, setTheme } = useTheme();
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState(state.fileName);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setNameValue(state.fileName);
+  }, [state.fileName]);
+
+  useEffect(() => {
+    if (editingName && nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select();
+    }
+  }, [editingName]);
+
+  const handleNameSave = () => {
+    const name = nameValue.trim() || 'untitled.md';
+    dispatch({ type: 'SET_FILE_NAME', fileName: name.endsWith('.md') ? name : name + '.md' });
+    setEditingName(false);
+  };
 
   const handleSave = () => {
     const markdown = state.mode === 'text' || state.mode === 'hybrid'
@@ -53,8 +74,25 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        <FileText size={22} className={styles.logo} />
-        <span className={styles.title}>BlockMD</span>
+        <FileText size={20} className={styles.logo} />
+        {editingName ? (
+          <input
+            ref={nameInputRef}
+            className={styles.nameInput}
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onBlur={handleNameSave}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleNameSave();
+              if (e.key === 'Escape') { setNameValue(state.fileName); setEditingName(false); }
+            }}
+          />
+        ) : (
+          <button className={styles.nameBtn} onClick={() => setEditingName(true)}>
+            <span className={styles.fileName}>{state.fileName}</span>
+            <Pencil size={12} className={styles.nameEditIcon} />
+          </button>
+        )}
       </div>
 
       <div className={styles.modeGroup}>
@@ -71,9 +109,12 @@ export function Header() {
       </div>
 
       <div className={styles.right}>
-        <button className={styles.actionBtn} onClick={() => dispatch({ type: 'TOGGLE_PREVIEW' })}>
-          {state.previewVisible ? <EyeOff size={14} /> : <Eye size={14} />}
-          <span className={styles.actionLabel}>Preview</span>
+        <button
+          className={`${styles.actionBtn} ${state.previewVisible ? styles.previewActive : ''}`}
+          onClick={() => dispatch({ type: 'TOGGLE_PREVIEW' })}
+        >
+          {state.previewVisible ? <Eye size={14} /> : <EyeOff size={14} />}
+          <span className={styles.actionLabel}>{state.previewVisible ? 'Preview ON' : 'Preview OFF'}</span>
         </button>
         <button className={`${styles.actionBtn} ${styles.saveBtn}`} onClick={handleSave}>
           <Download size={14} />
