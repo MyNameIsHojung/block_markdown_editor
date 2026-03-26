@@ -66,22 +66,6 @@ npm run build
 npm run preview
 ```
 
-## GitHub Pages 배포
-
-`dist/` 폴더의 내용을 GitHub Pages에 배포합니다.
-
-**방법 1: GitHub Actions (권장)**
-
-`.github/workflows/deploy.yml` 파일을 생성하여 자동 배포를 설정할 수 있습니다.
-
-**방법 2: 수동 배포**
-
-```bash
-npm run build
-# dist/ 폴더의 내용을 gh-pages 브랜치에 push
-npx gh-pages -d dist
-```
-
 ## Project Structure
 
 ```
