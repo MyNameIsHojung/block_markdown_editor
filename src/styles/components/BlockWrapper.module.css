@@ -45,22 +45,6 @@
   overflow: hidden;
 }
 
-.meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.tag {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--primary);
-  background: var(--primary-soft);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
 .deleteBtn {
   display: flex;
   align-items: center;

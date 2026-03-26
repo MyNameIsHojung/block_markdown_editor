@@ -25,6 +25,11 @@
   text-transform: uppercase;
 }
 
+.metaTagAdv {
+  color: var(--secondary);
+  background: rgba(116, 160, 129, 0.12);
+}
+
 .text {
   font-size: 14px;
   color: var(--text-primary);

@@ -53,12 +53,83 @@ export function BlockContent({ block }: BlockContentProps) {
   const Icon = blockIcons[block.type];
   const isBasic = ['heading', 'paragraph', 'unordered-list', 'ordered-list'].includes(block.type);
 
+  const editContainerRef = useRef<HTMLDivElement>(null);
+
   const handleSave = () => {
     dispatch({ type: 'UPDATE_BLOCK', id: block.id, updates: { content: editValue } });
     setEditing(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleBlur = (e: React.FocusEvent) => {
+    // Don't close if focus moves to another element within the edit container (e.g. meta buttons)
+    if (editContainerRef.current?.contains(e.relatedTarget as Node)) return;
+    handleSave();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const ta = e.currentTarget;
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+
+      if (e.shiftKey) {
+        // Shift+Tab: outdent selected lines
+        const lines = editValue.split('\n');
+        let pos = 0;
+        let newStart = start;
+        let newEnd = end;
+        const newLines = lines.map(line => {
+          const lineStart = pos;
+          const lineEnd = pos + line.length;
+          pos = lineEnd + 1;
+          if (lineEnd >= start && lineStart <= end) {
+            if (line.startsWith('  ')) {
+              if (lineStart <= start) newStart = Math.max(lineStart, newStart - 2);
+              newEnd -= 2;
+              return line.slice(2);
+            }
+          }
+          return line;
+        });
+        const val = newLines.join('\n');
+        setEditValue(val);
+        requestAnimationFrame(() => {
+          ta.selectionStart = Math.max(0, newStart);
+          ta.selectionEnd = Math.max(0, newEnd);
+        });
+      } else {
+        // Tab: indent at cursor or indent selected lines
+        if (start === end) {
+          const val = editValue.slice(0, start) + '  ' + editValue.slice(end);
+          setEditValue(val);
+          requestAnimationFrame(() => {
+            ta.selectionStart = ta.selectionEnd = start + 2;
+          });
+        } else {
+          const lines = editValue.split('\n');
+          let pos = 0;
+          let newEnd = end;
+          const newLines = lines.map(line => {
+            const lineStart = pos;
+            const lineEnd = pos + line.length;
+            pos = lineEnd + 1;
+            if (lineEnd >= start && lineStart <= end) {
+              newEnd += 2;
+              return '  ' + line;
+            }
+            return line;
+          });
+          const val = newLines.join('\n');
+          setEditValue(val);
+          requestAnimationFrame(() => {
+            ta.selectionStart = start;
+            ta.selectionEnd = newEnd;
+          });
+        }
+      }
+      return;
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSave();
@@ -189,7 +260,7 @@ export function BlockContent({ block }: BlockContentProps) {
   // --- Editing mode ---
   if (editing) {
     return (
-      <div className={styles.editContainer}>
+      <div className={styles.editContainer} ref={editContainerRef}>
         <Icon size={16} className={isBasic ? styles.iconBasic : styles.iconAdv} />
         <div className={styles.editBody}>
           {block.type === 'heading' && (
@@ -246,7 +317,7 @@ export function BlockContent({ block }: BlockContentProps) {
             className={styles.editInput}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
-            onBlur={handleSave}
+            onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             rows={Math.max(2, editValue.split('\n').length)}
           />
@@ -262,23 +333,30 @@ export function BlockContent({ block }: BlockContentProps) {
     ? block.content.slice(0, 100) + '...'
     : block.content;
 
+  const typeLabel = (() => {
+    switch (block.type) {
+      case 'heading': return `H${level}`;
+      case 'paragraph': return 'P';
+      case 'unordered-list': return 'UL';
+      case 'ordered-list': return 'OL';
+      case 'blockquote': return 'Quote';
+      case 'code': return block.meta?.language ? String(block.meta.language) : 'Code';
+      case 'image': return 'Image';
+      case 'checklist': return 'Checklist';
+      case 'mermaid': return 'Mermaid';
+      case 'math': return 'Math';
+      case 'callout': return block.meta?.variant ? String(block.meta.variant) : 'Callout';
+      case 'footnote': return 'Footnote';
+      default: return block.type;
+    }
+  })();
+
   return (
     <div className={styles.display} onDoubleClick={() => setEditing(true)}>
-      <Icon size={16} className={isBasic ? styles.iconBasic : styles.iconAdv} />
-      <div className={styles.textArea}>
-        {block.type === 'heading' && (
-          <span className={styles.metaTag}>H{level}</span>
-        )}
-        {block.type === 'code' && block.meta?.language ? (
-          <span className={styles.metaTag}>{String(block.meta.language)}</span>
-        ) : null}
-        {block.type === 'callout' && block.meta?.variant ? (
-          <span className={styles.metaTag}>{String(block.meta.variant)}</span>
-        ) : null}
-        <span className={`${styles.text} ${block.type === 'heading' ? styles.headingText : ''}`}>
-          {displayContent || '(empty)'}
-        </span>
-      </div>
+      <span className={`${styles.metaTag} ${isBasic ? '' : styles.metaTagAdv}`}>{typeLabel}</span>
+      <span className={`${styles.text} ${block.type === 'heading' ? styles.headingText : ''}`}>
+        {displayContent || '(empty)'}
+      </span>
     </div>
   );
 }

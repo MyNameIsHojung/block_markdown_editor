@@ -15,26 +15,37 @@ function serializeBlock(block: Block): string {
     case 'unordered-list':
       return block.content
         .split('\n')
-        .map(item => `- ${item}`)
+        .map(item => {
+          const match = item.match(/^(\s*)(.*)/);
+          const indent = match?.[1] || '';
+          const text = match?.[2] || '';
+          return `${indent}- ${text}`;
+        })
         .join('\n');
     case 'ordered-list': {
       const start = (block.meta?.start as number) || 1;
+      let num = start;
       return block.content
         .split('\n')
-        .map((item, i) => `${start + i}. ${item}`)
+        .map(item => {
+          const match = item.match(/^(\s*)(.*)/);
+          const indent = match?.[1] || '';
+          const text = match?.[2] || '';
+          return `${indent}${num++}. ${text}`;
+        })
         .join('\n');
     }
     case 'checklist':
       return block.content
         .split('\n')
         .map(item => {
-          if (item.startsWith('[x] ') || item.startsWith('[X] ')) {
-            return `- ${item}`;
+          const match = item.match(/^(\s*)(.*)/);
+          const indent = match?.[1] || '';
+          const text = match?.[2] || '';
+          if (text.startsWith('[x] ') || text.startsWith('[X] ') || text.startsWith('[ ] ')) {
+            return `${indent}- ${text}`;
           }
-          if (item.startsWith('[ ] ')) {
-            return `- ${item}`;
-          }
-          return `- [ ] ${item}`;
+          return `${indent}- [ ] ${text}`;
         })
         .join('\n');
     case 'blockquote':

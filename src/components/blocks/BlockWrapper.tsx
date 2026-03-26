@@ -2,7 +2,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2 } from 'lucide-react';
 import { useEditor } from '../../store/editorStore';
-import { getBlockTypeLabel } from '../../utils/markdownParser';
 import type { Block } from '../../types/blocks';
 import { BlockContent } from './BlockContent';
 import styles from '../../styles/components/BlockWrapper.module.css';
@@ -40,16 +39,13 @@ export function BlockWrapper({ block }: BlockWrapperProps) {
       <div className={styles.content}>
         <BlockContent block={block} />
       </div>
-      <div className={styles.meta}>
-        <span className={styles.tag}>{getBlockTypeLabel(block.type)}</span>
-        <button
-          className={styles.deleteBtn}
-          onClick={() => dispatch({ type: 'DELETE_BLOCK', id: block.id })}
-          title="Delete block"
-        >
-          <Trash2 size={12} />
-        </button>
-      </div>
+      <button
+        className={styles.deleteBtn}
+        onClick={() => dispatch({ type: 'DELETE_BLOCK', id: block.id })}
+        title="Delete block"
+      >
+        <Trash2 size={12} />
+      </button>
     </div>
   );
 }
