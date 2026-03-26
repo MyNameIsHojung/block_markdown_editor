@@ -20,11 +20,10 @@
 }
 
 .previewArea {
-  width: 50%;
-  max-width: 700px;
-  min-width: 300px;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
-  flex-shrink: 0;
+  border-left: 1px solid var(--border);
 }
 
 @media (max-width: 768px) {

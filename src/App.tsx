@@ -67,7 +67,7 @@ function AppContent() {
         <div className={styles.editorArea}>
           {renderEditor()}
         </div>
-        {state.previewVisible && state.mode !== 'hybrid' && (
+        {state.previewVisible && (
           <div className={styles.previewArea}>
             <Preview />
           </div>

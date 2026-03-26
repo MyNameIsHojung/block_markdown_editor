@@ -3,7 +3,6 @@
   flex-direction: column;
   height: 100%;
   background: var(--page-bg);
-  border-left: 1px solid var(--border);
 }
 
 .header {
