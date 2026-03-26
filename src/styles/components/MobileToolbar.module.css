@@ -61,4 +61,71 @@
     font-size: 9px;
     color: var(--text-muted);
   }
+
+  .toolBtnActive {
+    color: var(--primary);
+  }
+
+  .morePanel {
+    position: fixed;
+    bottom: 64px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 50;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .morePanelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .morePanelClose {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 6px;
+    color: var(--text-muted);
+  }
+
+  .morePanelClose:hover {
+    background: var(--block-hover);
+    color: var(--text-primary);
+  }
+
+  .moreGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 12px;
+  }
+
+  .moreItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 4px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+
+  .moreItem:hover,
+  .moreItem:active {
+    background: var(--block-hover);
+    color: var(--primary);
+  }
 }

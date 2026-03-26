@@ -110,7 +110,7 @@ export function Header() {
 
       <div className={styles.right}>
         <button
-          className={`${styles.actionBtn} ${state.previewVisible ? styles.previewActive : ''}`}
+          className={`${styles.previewBtn} ${state.previewVisible ? styles.previewOn : styles.previewOff}`}
           onClick={() => dispatch({ type: 'TOGGLE_PREVIEW' })}
         >
           {state.previewVisible ? <Eye size={14} /> : <EyeOff size={14} />}

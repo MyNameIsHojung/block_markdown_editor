@@ -5,7 +5,7 @@ const initialState: EditorState = {
   blocks: [],
   rawMarkdown: '',
   mode: 'text',
-  previewVisible: true,
+  previewVisible: false,
   theme: 'system',
   fileName: 'untitled.md',
   changeSource: null,
